@@ -1,0 +1,4 @@
+name, connections
+A, B; C
+B, A; C
+C, A; B
