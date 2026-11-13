@@ -69,17 +69,28 @@ std::vector<std::vector<std::string>> read_csv(const std::string& filename, bool
 
 std::vector<station> read_stations(const std::string& filename) {
     std::vector<station> stations;
-    station s1;
-    s1.name = "Station A";
-    station s2;
-    s2.name = "Station B";
-    s2.connections.push_back(s1);
-    station s3;
-    s3.name = "Station C";
-    s3.connections.push_back(s2);
-    stations.push_back(s1);
-    stations.push_back(s2);
-    stations.push_back(s3);
+    std::vector<std::vector<std::string>> data = read_csv(filename);
+    for (auto& row : data) {
+        if (row.size() != 2) {
+            log("WARNING: Row " + std::to_string(&row - &data[0]) + " does not have 2 columns. Skipping.");
+        }
+        else {
+            station s;
+            s.name = row[0];
+            std::istringstream connections_stream(row[1]);
+            std::string connection_name;
+            while (std::getline(connections_stream, connection_name, ';')) {
+                for (auto& existing_station : stations) {
+                    if (existing_station.name == connection_name) {
+                        s.connections.push_back(existing_station);
+                        existing_station.connections.push_back(s);
+                        break;
+                    }
+                }
+            }
+            stations.push_back(s);
+        }
+    }
     return stations;
 }
 
@@ -98,8 +109,9 @@ std::vector<train> read_trains(const std::string& filename) {
 
 int main() {
     log("Application started.");
-    std::vector<std::vector<std::string>> stations_data = read_csv("C:\\Users\\Jekam\\Documents\\03-Projects\\Train Sim\\stations.csv");
-    log("Number of stations read from CSV: " + std::to_string(stations_data.size()));
+    std::vector<station> stations = read_stations("C:\\Users\\Jekam\\Documents\\03-Projects\\Train Sim\\stations.csv");
+    log("Number of stations read from CSV: " + std::to_string(stations.size()));
+    log("First station name:" + stations[0].name);
     log("Application exited successfully.");
     return 0;
 }
