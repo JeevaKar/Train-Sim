@@ -1,0 +1,2 @@
+id, locationA, locationB, destination, max_speed, optimal_speed, type
+Train, A, B, C, 15, 5, 0

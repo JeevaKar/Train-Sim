@@ -15,14 +15,14 @@ enum class TrainType {
 class station {
     public:
         std::string name;
-        std::vector<station> connections;
+        std::vector<station*> connections;
 };
 
 class train {
     public:
         std::string id;
-        std::vector<station> location;
-        station destination;
+        std::vector<station*> location;
+        station* destination;
         int max_speed;
         int optimal_speed;
         TrainType type;
@@ -67,9 +67,9 @@ std::vector<std::vector<std::string>> read_csv(const std::string& filename, bool
     return data;
 }
 
-std::vector<station> read_stations(const std::string& filename) {
+std::vector<station> read_stations(const std::string& filename, bool has_header = true) {
     std::vector<station> stations;
-    std::vector<std::vector<std::string>> data = read_csv(filename);
+    std::vector<std::vector<std::string>> data = read_csv(filename, has_header);
     for (auto& row : data) {
         if (row.size() != 2) {
             log("WARNING: Row " + std::to_string(&row - &data[0]) + " does not have 2 columns. Skipping.");
@@ -82,8 +82,8 @@ std::vector<station> read_stations(const std::string& filename) {
             while (std::getline(connections_stream, connection_name, ';')) {
                 for (auto& existing_station : stations) {
                     if (existing_station.name == connection_name) {
-                        s.connections.push_back(existing_station);
-                        existing_station.connections.push_back(s);
+                        s.connections.push_back(&existing_station);
+                        existing_station.connections.push_back(&s);
                         break;
                     }
                 }
@@ -94,16 +94,33 @@ std::vector<station> read_stations(const std::string& filename) {
     return stations;
 }
 
-std::vector<train> read_trains(const std::string& filename) {
+std::vector<train> read_trains(const std::string& filename, std::vector<station>& stations, bool has_header = true) {
     std::vector<train> trains;
-    train t1;
-    t1.id = "T123";
-    t1.location = {station{"Station A"}, station{"Station B"}};
-    t1.destination = station{"Station C"};
-    t1.max_speed = 120;
-    t1.optimal_speed = 100;
-    t1.type = TrainType::PASSENGER;
-    trains.push_back(t1);
+    std::vector<std::vector<std::string>> data = read_csv(filename, has_header);
+    for (auto row : data) {
+        if (row.size() != 7) {
+            log("WARNING: Row " + std::to_string(&row - &data[0]) + " does not have 7 columns. Skipping.");
+        }
+        else {
+            train t;
+            t.id = row[0];
+            for (auto& station : stations) {
+                if (station.name == row[1]) {
+                    t.location.insert(t.location.begin(), &station);
+                }
+                if (station.name == row[2]) {
+                    t.location.push_back(&station);
+                }
+                if (station.name == row[3]) {
+                    t.destination = &station;
+                }
+            }
+            t.max_speed = std::stoi(row[4]);
+            t.optimal_speed = std::stoi(row[5]);
+            t.type = TrainType(std::stoi(row[6]));
+            trains.push_back(t);
+        }
+    }
     return trains;
 }
 
@@ -111,7 +128,8 @@ int main() {
     log("Application started.");
     std::vector<station> stations = read_stations("C:\\Users\\Jekam\\Documents\\03-Projects\\Train Sim\\stations.csv");
     log("Number of stations read from CSV: " + std::to_string(stations.size()));
-    log("First station name:" + stations[0].name);
+    std::vector<train> trains = read_trains("C:\\Users\\Jekam\\Documents\\03-Projects\\Train Sim\\trains.csv", stations);
+    log("Number of trains read from CSV: " + std::to_string(trains.size()));
     log("Application exited successfully.");
     return 0;
 }
