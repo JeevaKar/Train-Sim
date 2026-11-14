@@ -1,24 +1,14 @@
-2026-11-14 01:49:37 UTC - Application started.
-2026-11-14 01:49:37 UTC - Number of stations read from CSV: 3
-2026-11-14 01:49:37 UTC - Number of trains read from CSV: 1
-2026-11-14 01:49:37 UTC - Application exited successfully.
-2026-11-14 01:50:24 UTC - Application started.
-2026-11-14 01:50:24 UTC - Number of stations read from CSV: 3
-2026-11-14 01:50:24 UTC - WARNING: Row 6148914604497068978 does not have 7 columns. Skipping.
-2026-11-14 01:50:24 UTC - Number of trains read from CSV: 1
-2026-11-14 01:50:24 UTC - Application exited successfully.
-2026-11-14 01:53:46 UTC - Application started.
-2026-11-14 01:53:46 UTC - Number of stations read from CSV: 3
-2026-11-14 01:53:46 UTC - WARNING: Row 1 does not have 7 columns. Skipping.
-2026-11-14 01:53:46 UTC - Number of trains read from CSV: 1
-2026-11-14 01:53:46 UTC - Application exited successfully.
-2026-11-14 01:53:59 UTC - Application started.
-2026-11-14 01:53:59 UTC - Number of stations read from CSV: 3
-2026-11-14 01:53:59 UTC - WARNING: Row 1 does not have 7 columns. Skipping.
-2026-11-14 01:53:59 UTC - Number of trains read from CSV: 1
-2026-11-14 01:53:59 UTC - Application exited successfully.
-2026-11-14 01:54:05 UTC - Application started.
-2026-11-14 01:54:05 UTC - Number of stations read from CSV: 3
-2026-11-14 01:54:05 UTC - WARNING: Row 2 does not have 7 columns. Skipping.
-2026-11-14 01:54:05 UTC - Number of trains read from CSV: 1
-2026-11-14 01:54:05 UTC - Application exited successfully.
+2026-11-14 01:59:07 UTC - Application started.
+2026-11-14 01:59:07 UTC - Number of stations read from CSV: 3
+2026-11-14 01:59:07 UTC - First station details: Station: A, Lat: 1.000000, Long: 2.000000, Connections: 
+2026-11-14 01:59:07 UTC - WARNING: Row 2 does not have 7 columns. Skipping.
+2026-11-14 01:59:07 UTC - Number of trains read from CSV: 1
+2026-11-14 01:59:07 UTC - Application exited successfully.
+2026-11-14 02:01:36 UTC - Application started.
+2026-11-14 02:01:36 UTC - Number of stations read from CSV: 3
+2026-11-14 02:01:36 UTC - Station details: Station: A, Lat: 1.000000, Long: 2.000000, Connections: B C 
+2026-11-14 02:01:36 UTC - Station details: Station: B, Lat: 3.000000, Long: 4.000000, Connections: A C 
+2026-11-14 02:01:36 UTC - Station details: Station: C, Lat: 5.000000, Long: 6.000000, Connections: A B 
+2026-11-14 02:01:36 UTC - WARNING: Row 2 does not have 7 columns. Skipping.
+2026-11-14 02:01:36 UTC - Number of trains read from CSV: 1
+2026-11-14 02:01:36 UTC - Application exited successfully.

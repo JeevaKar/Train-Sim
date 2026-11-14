@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <fstream> 
 #include <sstream>
 #include <ctime>
@@ -15,7 +16,17 @@ enum class TrainType {
 class station {
     public:
         std::string name;
+        float latitude;
+        float longitude;
         std::vector<station*> connections;
+
+        std::string to_string() const {
+            std::string result = "Station: " + name + ", Lat: " + std::to_string(latitude) + ", Long: " + std::to_string(longitude) + ", Connections: ";
+            for (const auto& conn : connections) {
+                result += conn->name + " ";
+            }
+            return result;
+        }
 };
 
 class train {
@@ -44,6 +55,16 @@ int log(const std::string& message) {
     return 0;
 }
 
+std::string trim(const std::string& value) {
+    const std::string whitespace = " \t\r\n";
+    const std::size_t first = value.find_first_not_of(whitespace);
+    if (first == std::string::npos) {
+        return "";
+    }
+    const std::size_t last = value.find_last_not_of(whitespace);
+    return value.substr(first, last - first + 1);
+}
+
 std::vector<std::vector<std::string>> read_csv(const std::string& filename, bool has_header = true) {
     std::vector<std::vector<std::string>> data;
     std::ifstream file(filename);
@@ -60,7 +81,7 @@ std::vector<std::vector<std::string>> read_csv(const std::string& filename, bool
         std::string cell;
         std::istringstream line_stream(line);
         while (std::getline(line_stream, cell, ',')) {
-            row.push_back(cell);
+            row.push_back(trim(cell));
         }
         data.push_back(row);
     }
@@ -69,29 +90,54 @@ std::vector<std::vector<std::string>> read_csv(const std::string& filename, bool
 
 std::vector<station> read_stations(const std::string& filename, bool has_header = true) {
     std::vector<station> stations;
+    std::vector<std::vector<std::string>> pending_connections;
     std::vector<std::vector<std::string>> data = read_csv(filename, has_header);
     int i = 1;
     for (auto& row : data) {
-        if (row.size() != 2) {
-            log("WARNING: Row " + std::to_string(i) + " does not have 2 columns. Skipping.");
+        if (row.size() != 4) {
+            log("WARNING: Row " + std::to_string(i) + " does not have 4 columns. Skipping.");
         }
         else {
             station s;
             s.name = row[0];
-            std::istringstream connections_stream(row[1]);
+            s.latitude = std::stof(row[1]);
+            s.longitude = std::stof(row[2]);
+            std::vector<std::string> connection_names;
+            std::istringstream connections_stream(row[3]);
             std::string connection_name;
             while (std::getline(connections_stream, connection_name, ';')) {
-                for (auto& existing_station : stations) {
-                    if (existing_station.name == connection_name) {
-                        s.connections.push_back(&existing_station);
-                        existing_station.connections.push_back(&s);
-                        break;
-                    }
+                connection_name = trim(connection_name);
+                if (!connection_name.empty()) {
+                    connection_names.push_back(connection_name);
                 }
             }
             stations.push_back(s);
+            pending_connections.push_back(connection_names);
         }
         i++;
+    }
+
+    auto add_connection = [](station& from, station* to) {
+        if (std::find(from.connections.begin(), from.connections.end(), to) == from.connections.end()) {
+            from.connections.push_back(to);
+        }
+    };
+    for (std::size_t station_index = 0; station_index < stations.size(); ++station_index) {
+        for (const auto& connection_name : pending_connections[station_index]) {
+            bool found = false;
+            for (std::size_t target_index = 0; target_index < stations.size(); ++target_index) {
+                if (stations[target_index].name == connection_name) {
+                    add_connection(stations[station_index], &stations[target_index]);
+                    add_connection(stations[target_index], &stations[station_index]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                log("WARNING: Connection '" + connection_name + "' for station '" +
+                    stations[station_index].name + "' was not found.");
+            }
+        }
     }
     return stations;
 }
@@ -132,6 +178,9 @@ int main() {
     log("Application started.");
     std::vector<station> stations = read_stations("C:\\Users\\Jekam\\Documents\\03-Projects\\Train Sim\\stations.csv");
     log("Number of stations read from CSV: " + std::to_string(stations.size()));
+    for (const auto& current_station : stations) {
+        log("Station details: " + current_station.to_string());
+    }
     std::vector<train> trains = read_trains("C:\\Users\\Jekam\\Documents\\03-Projects\\Train Sim\\trains.csv", stations);
     log("Number of trains read from CSV: " + std::to_string(trains.size()));
     log("Application exited successfully.");

@@ -1,4 +1,4 @@
-name, connections
-A, B; C
-B, A; C
-C, A; B
+name, lat, long, connections
+A, 1.0, 2.0, B; C
+B, 3.0, 4.0, A; C
+C, 5.0, 6.0, A; B
