@@ -70,9 +70,10 @@ std::vector<std::vector<std::string>> read_csv(const std::string& filename, bool
 std::vector<station> read_stations(const std::string& filename, bool has_header = true) {
     std::vector<station> stations;
     std::vector<std::vector<std::string>> data = read_csv(filename, has_header);
+    int i = 1;
     for (auto& row : data) {
         if (row.size() != 2) {
-            log("WARNING: Row " + std::to_string(&row - &data[0]) + " does not have 2 columns. Skipping.");
+            log("WARNING: Row " + std::to_string(i) + " does not have 2 columns. Skipping.");
         }
         else {
             station s;
@@ -90,6 +91,7 @@ std::vector<station> read_stations(const std::string& filename, bool has_header 
             }
             stations.push_back(s);
         }
+        i++;
     }
     return stations;
 }
@@ -97,9 +99,10 @@ std::vector<station> read_stations(const std::string& filename, bool has_header 
 std::vector<train> read_trains(const std::string& filename, std::vector<station>& stations, bool has_header = true) {
     std::vector<train> trains;
     std::vector<std::vector<std::string>> data = read_csv(filename, has_header);
+    int i = 1;
     for (auto row : data) {
         if (row.size() != 7) {
-            log("WARNING: Row " + std::to_string(&row - &data[0]) + " does not have 7 columns. Skipping.");
+            log("WARNING: Row " + std::to_string(i) + " does not have 7 columns. Skipping.");
         }
         else {
             train t;
@@ -120,6 +123,7 @@ std::vector<train> read_trains(const std::string& filename, std::vector<station>
             t.type = TrainType(std::stoi(row[6]));
             trains.push_back(t);
         }
+        i++;
     }
     return trains;
 }
